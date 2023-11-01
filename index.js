@@ -18,7 +18,7 @@ const multer = require('multer');
 const uploadMiddleWare = multer({ dest: 'uploads/' })
 
 // To change file extension to webp (file system)
- const fs = require('fs');   // fs was not working
+const fs = require('fs');   // fs was not working
 const sharp = require('sharp');
 const { log, info } = require('console');
 
