@@ -20,16 +20,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/borkarSahil/MERN-BLOG-APP-Backend.git"
-  },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/borkarSahil/MERN-BLOG-APP-Backend/issues"
-  },
-  "homepage": "https://github.com/borkarSahil/MERN-BLOG-APP-Backend#readme",
-  "description": ""
+  "license": "ISC"
 }
