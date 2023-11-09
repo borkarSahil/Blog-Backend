@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node index.js",
-    "build": "npm i"
+    "start": "node index.js",
+    "test": "mocha test/**/*.test.js",
+    "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
