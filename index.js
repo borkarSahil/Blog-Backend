@@ -22,7 +22,7 @@ const fs = require('fs');   // fs was not working
 const sharp = require('sharp');
 const { log, info } = require('console');
 
-const PORT = process.env.port;
+const PORT = process.env.port || 4000;
 const MONGODB_URL = process.env.mongodb_url
 const secret = process.env.secret;
 
