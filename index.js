@@ -25,6 +25,7 @@ const { log, info } = require('console');
 const PORT = process.env.port || 4000;
 const MONGODB_URL = process.env.mongodb_url
 const secret = process.env.secret;
+const Base_Url = process.env.BASE_URL;
 
 const app = express();
 
@@ -38,7 +39,7 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 // As we are using credentials
 app.use( cors( {
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: Base_Url,
 }));
 
 app.post('/register', async (req, res) => {
