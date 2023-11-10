@@ -37,11 +37,11 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 // As we are using credentials
-app.use(cors());
-// app.use( cors( {
-//     credentials: true,
-//     origin: Base_Url,
-// }));
+
+app.use( cors( {
+    credentials: true,
+    origin: process.env.BASE_URL,
+}));
 
 app.post('/register', async (req, res) => {
     const {username, password} = req.body;
