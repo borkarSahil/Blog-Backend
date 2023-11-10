@@ -39,8 +39,8 @@ app.use('/uploads', express.static(__dirname + '/uploads'));
 // As we are using credentials
 
 app.use( cors( {
+    origin: Base_Url,
     credentials: true,
-    origin: process.env.BASE_URL,
 }));
 
 app.post('/register', async (req, res) => {
@@ -96,7 +96,10 @@ app.get('/profile', (req, res) => {
         return res.status(401).json({ message: 'JWT must be provided' });
     }
     jwt.verify(token, secret, {}, (err, info) => {
-        if (err) throw err;
+        if (err) {
+            console.error('JWT Verification Error:', err);
+            return res.status(401).json({ message: 'JWT verification failed' });
+        };
         res.json(info);
     });
 });
@@ -140,9 +143,12 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
                       });
                 });
 
-        const {token} = req.cookies;
+        const token = req.cookies.token;
         jwt.verify(token, secret, {}, async (err, info) => {
-            if (err) throw err;
+            if (err)  {
+                console.error('JWT Verification Error:', err);
+                return res.status(401).json({ message: 'JWT verification failed' });
+              }
                 const { title, summary, content } = req.body;
                 // Create the Post document with the WebP path
                 const postDoc = await Post.create({
@@ -208,6 +214,9 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
     }
 
         const {token} = req.cookies;
+        if (!token) {
+            return res.status(401).json({ message: 'JWT must be provided' });
+        }
         jwt.verify(token, secret, {}, async (err, Info) => {
             if (err) throw err;
                 const { id, title, summary, content } = req.body;
@@ -217,15 +226,12 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
                     return res.status(400).json('you are not the author');
                 }
 
-                await Post.findByIdAndUpdate(id,{
+                await postDoc.update({
                     title,
                     summary,
                     content,
                     cover: newPath ? newPath : postDoc.cover,
                 });
-
-                 // Retrieve the updated document
-                const updatedPost = await Post.findById(id);
 
               
                 res.json(updatedPost);
