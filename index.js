@@ -26,7 +26,7 @@ const PORT = process.env.port || 4000;
 const MONGODB_URL = process.env.mongodb_url
 const secret = process.env.secret;
 const Base_Url = process.env.BASE_URL;
-
+// console.log("Base", Base_Url);
 const app = express();
 
 app.use(express.json());
@@ -37,10 +37,11 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 // As we are using credentials
-app.use( cors( {
-    credentials: true,
-    origin: Base_Url,
-}));
+app.use(cors());
+// app.use( cors( {
+//     credentials: true,
+//     origin: Base_Url,
+// }));
 
 app.post('/register', async (req, res) => {
     const {username, password} = req.body;
