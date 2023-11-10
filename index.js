@@ -192,6 +192,8 @@ app.get('/post/:id', async (req, res) =>{
 
 // Route to Update the data
 app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
+    console.log('Received token:', req.cookies.token); // Log the token
+
     let newPath = null;
     if(req.file){
         const { originalname, path } = req.file;
@@ -234,7 +236,7 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
                 });
 
               
-                res.json(updatedPost);
+                res.json(postDoc);
         });
 });
 
