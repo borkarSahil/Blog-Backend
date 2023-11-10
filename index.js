@@ -47,8 +47,8 @@ app.post('/register', async (req, res) => {
     const {username, password} = req.body;
     try{
         // Create a new User
-        const userDocs = await User.create( 
-            {username, 
+        const userDocs = await User.create( {
+            username, 
             password :bcrypt.hashSync(password, salt),
         } );
         res.json( userDocs );
@@ -58,8 +58,8 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    const {username, password} = req.body;
     try{
+        const {username, password} = req.body;
         // Create a new User
         const userDoc = await User.findOne({
             username: username,
@@ -91,7 +91,7 @@ app.post('/login', async (req, res) => {
 
 // We will take the cookie and show profile
 app.get('/profile', (req, res) => {
-    const token = req.cookies.token;
+    const {token} = req.cookies;
     if (!token) {
         return res.status(401).json({ message: 'JWT must be provided' });
     }
@@ -111,6 +111,7 @@ app.post('/logout', (req, res) => {
 
 // Route to create post
 app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
+    console.log('Received token:', req.cookies.token); // Log the token
     try {
         // const {title, summary, content} = req.body;
 
@@ -143,7 +144,7 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
                       });
                 });
 
-        const token = req.cookies.token;
+        const {token} = req.cookies;
         jwt.verify(token, secret, {}, async (err, info) => {
             if (err)  {
                 console.error('JWT Verification Error:', err);
@@ -219,16 +220,16 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
         if (!token) {
             return res.status(401).json({ message: 'JWT must be provided' });
         }
-        jwt.verify(token, secret, {}, async (err, Info) => {
+        jwt.verify(token, secret, {}, async (err, info) => {
             if (err) throw err;
                 const { id, title, summary, content } = req.body;
                 const postDoc = await Post.findById(id);
-                const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(Info.id);
+                const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
                 if (!isAuthor) {
                     return res.status(400).json('you are not the author');
                 }
 
-                await postDoc.update({
+                await postDoc.updateOne({
                     title,
                     summary,
                     content,
