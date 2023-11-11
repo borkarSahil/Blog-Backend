@@ -29,19 +29,18 @@ const Base_Url = process.env.BASE_URL;
 // console.log("Base", Base_Url);
 const app = express();
 
+// As we are using credentials
+app.use( cors( {
+    origin: Base_Url,
+    credentials: true,
+}));
+
 app.use(express.json());
 // We are using cookies to get to know if user is login
 // If user is logged in we will show him his profile
 app.use(cookieParser());
 
 app.use('/uploads', express.static(__dirname + '/uploads'));
-
-// As we are using credentials
-
-app.use( cors( {
-    origin: Base_Url,
-    credentials: true,
-}));
 
 app.post('/register', async (req, res) => {
     const {username, password} = req.body;
@@ -222,6 +221,7 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
     }
 
         const {token} = req.cookies;
+        console.log('Update Token:', token); // Log the token
         if (!token) {
             return res.status(401).json({ message: 'Update Route:JWT must be provided' });
         }
@@ -230,6 +230,7 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
                 console.error('JWT Verification Error at Update Path:', err);
                 return res.status(401).json({ message: 'JWT verification failed at Update Route' });
             }
+            try{
                 const { id, title, summary, content } = req.body;
                 const postDoc = await Post.findById(id);
                 const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
@@ -243,9 +244,13 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
                     content,
                     cover: newPath ? newPath : postDoc.cover,
                 });
-
               
-                res.json(postDoc);
+                // res.json(postDoc);
+                res.json({ message: 'Post updated successfully', post: postDoc });
+            }catch (error) {
+                console.error('Error:', error.message);
+                res.status(500).json({ message: error.message });
+            }
         });
 });
 
