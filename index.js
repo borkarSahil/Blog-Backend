@@ -72,7 +72,7 @@ app.post('/login', async (req, res) => {
         // res.json( passOk );
         if (passOk){
             jwt.sign( {username, id: userDoc._id}, secret, {}, (err, token) =>{
-                console.log("UserId Login ", userDoc._id);
+                // console.log("UserId Login ", userDoc._id);
                 if (err) {
                     console.error('Login: Error:', err);
                     return res.status(401).json({ message: 'Login Jwt sign failed' });
@@ -113,7 +113,7 @@ app.post('/logout', (req, res) => {
 
 // Route to create post
 app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
-    console.log('Received token at Create Post:', req.cookies.token); // Log the token
+    // console.log('Received token at Create Post:', req.cookies.token); // Log the token
     try {
         // const {title, summary, content} = req.body;
 
@@ -197,7 +197,7 @@ app.get('/post/:id', async (req, res) =>{
 
 // Route to Update the data
 app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
-    console.log('Received token at Update Post:', req.cookies.token); // Log the token
+    // console.log('Received token at Update Post:', req.cookies.token); // Log the token
 
     let newPath = null;
     if(req.file){
@@ -221,7 +221,7 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
     }
 
         const {token} = req.cookies;
-        console.log('Update Token:', token); // Log the token
+        // console.log('Update Token:', token); // Log the token
         if (!token) {
             return res.status(401).json({ message: 'Update Route:JWT must be provided' });
         }
