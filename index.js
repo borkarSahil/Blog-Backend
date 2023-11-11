@@ -72,10 +72,13 @@ app.post('/login', async (req, res) => {
         const passOk = bcrypt.compareSync(password, userDoc.password);
         // res.json( passOk );
         if (passOk){
-            // console.log(passOk);
             jwt.sign( {username, id: userDoc._id}, secret, {}, (err, token) =>{
-                if (err) throw err;
-                res.cookie('token', token).json({
+                console.log("UserId Login ", userDoc._id);
+                if (err) {
+                    console.error('Login: Error:', err);
+                    return res.status(401).json({ message: 'Login Jwt sign failed' });
+                };
+                res.cookie('token', token, { httpOnly: true }).json({
                     id: userDoc._id,
                     username,
                 });
@@ -111,7 +114,7 @@ app.post('/logout', (req, res) => {
 
 // Route to create post
 app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
-    console.log('Received token:', req.cookies.token); // Log the token
+    console.log('Received token at Create Post:', req.cookies.token); // Log the token
     try {
         // const {title, summary, content} = req.body;
 
@@ -127,7 +130,7 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
 
         // Use sharp to convert the image to WebP format
 
-            sharp(path)
+        sharp(path)
                 .webp() // Convert to WebP format
                 .toFile(newPath, async (err, info) => {
                     if (err) {
@@ -145,10 +148,13 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
                 });
 
         const {token} = req.cookies;
+        if (!token) {
+            return res.status(401).json({ message: 'Create Post :JWT must be provided' });
+        }
         jwt.verify(token, secret, {}, async (err, info) => {
             if (err)  {
                 console.error('JWT Verification Error:', err);
-                return res.status(401).json({ message: 'JWT verification failed' });
+                return res.status(401).json({ message: 'Post Route:JWT verification failed' });
               }
                 const { title, summary, content } = req.body;
                 // Create the Post document with the WebP path
@@ -158,7 +164,6 @@ app.post('/post', uploadMiddleWare.single('file'), async (req, res) => {
                     content,
                     cover: newPath,
                     author: info.id,
-
                 });
                 res.json(postDoc);
         });
@@ -193,7 +198,7 @@ app.get('/post/:id', async (req, res) =>{
 
 // Route to Update the data
 app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
-    console.log('Received token:', req.cookies.token); // Log the token
+    console.log('Received token at Update Post:', req.cookies.token); // Log the token
 
     let newPath = null;
     if(req.file){
@@ -218,10 +223,13 @@ app.put('/post', uploadMiddleWare.single('file'), async(req, res) => {
 
         const {token} = req.cookies;
         if (!token) {
-            return res.status(401).json({ message: 'JWT must be provided' });
+            return res.status(401).json({ message: 'Update Route:JWT must be provided' });
         }
         jwt.verify(token, secret, {}, async (err, info) => {
-            if (err) throw err;
+            if (err)  {
+                console.error('JWT Verification Error at Update Path:', err);
+                return res.status(401).json({ message: 'JWT verification failed at Update Route' });
+            }
                 const { id, title, summary, content } = req.body;
                 const postDoc = await Post.findById(id);
                 const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
