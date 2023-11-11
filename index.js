@@ -77,7 +77,7 @@ app.post('/login', async (req, res) => {
                     console.error('Login: Error:', err);
                     return res.status(401).json({ message: 'Login Jwt sign failed' });
                 };
-                res.cookie('token', token, { httpOnly: true }).json({
+                res.cookie('token', token, { httpOnly: true, sameSite: 'None', secure: true }).json({
                     id: userDoc._id,
                     username,
                 });
