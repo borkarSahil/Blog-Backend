@@ -32,6 +32,7 @@ const app = express();
 // As we are using credentials
 app.use( cors( {
     origin: Base_Url,
+    
     credentials: true,
 }));
 
